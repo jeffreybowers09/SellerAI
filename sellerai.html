@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellerAI — Your E-Commerce AI Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3d;
+    --accent: #00e5a0;
+    --accent2: #7c6ffd;
+    --text: #f0f0f8;
+    --muted: #7070a0;
+    --danger: #ff4f6d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(0,229,160,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 10% 80%, rgba(124,111,253,0.07) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .badge {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* TOOL TABS */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .tab:hover { border-color: var(--accent2); color: var(--text); }
+
+  .tab.active {
+    background: linear-gradient(135deg, rgba(124,111,253,0.2), rgba(0,229,160,0.1));
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .tab-icon { font-size: 1rem; }
+
+  /* TOOL PANEL */
+  .tool-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .tool-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .tool-desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* FORM */
+  .field { margin-bottom: 18px; }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    padding: 12px 16px;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+
+  input:focus, textarea:focus, select:focus { border-color: var(--accent2); }
+
+  textarea { min-height: 110px; }
+
+  select option { background: var(--surface2); }
+
+  /* BUTTON */
+  .btn {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #000;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,160,0.25); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* OUTPUT */
+  .output-wrap {
+    margin-top: 28px;
+    display: none;
+  }
+
+  .output-wrap.visible { display: block; animation: fadeIn 0.4s ease; }
+
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .output-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .copy-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .output-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 22px;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    color: var(--text);
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  /* LOADING */
+  .loading {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 20px;
+  }
+
+  .loading.visible { display: flex; }
+
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: 1fr; }
+    .tabs { gap: 6px; }
+    .tab { font-size: 0.78rem; padding: 8px 12px; }
+    .tool-panel { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">Seller<span>AI</span></div>
+    <div class="badge">✦ Pro Tools</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">AI Tools Included</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">10×</div>
+      <div class="stat-label">Faster Than Manual</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">$19</div>
+      <div class="stat-label">Per Month</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTool('listing')"><span class="tab-icon">📦</span> Listing Optimizer</button>
+    <button class="tab" onclick="switchTool('review')"><span class="tab-icon">⭐</span> Review Responder</button>
+    <button class="tab" onclick="switchTool('adcopy')"><span class="tab-icon">📣</span> Ad Copy</button>
+    <button class="tab" onclick="switchTool('research')"><span class="tab-icon">🔍</span> Product Research</button>
+    <button class="tab" onclick="switchTool('email')"><span class="tab-icon">✉️</span> Email Sequence</button>
+  </div>
+
+  <!-- LISTING OPTIMIZER -->
+  <div id="tool-listing" class="tool-panel">
+    <div class="tool-title">📦 Listing Optimizer</div>
+    <div class="tool-desc">Paste your basic product info and get a fully optimized Amazon/Etsy/Shopify listing — title, bullet points, and description ready to copy.</div>
+    <div class="field">
+      <label>Platform</label>
+      <select id="listing-platform">
+        <option>Amazon</option>
+        <option>Etsy</option>
+        <option>Shopify</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Product Name & Basic Details</label>
+      <textarea id="listing-input" placeholder="e.g. Stainless steel water bottle, 32oz, keeps drinks cold 24hrs, BPA-free, comes in 5 colors, lid is leak-proof..."></textarea>
+    </div>
+    <button class="btn" onclick="runTool('listing')">⚡ Generate Listing</button>
+    <div class="loading" id="loading-listing"><div class="spinner"></div> Writing your optimized listing...</div>
+    <div class="output-wrap" id="output-listing">
+      <div class="output-header">
+        <div class="output-label">✦ Your Optimized Listing</div>
+        <button class="copy-btn" onclick="copyOutput('listing')">Copy All</button>
+      </div>
+      <div class="output-box" id="output-text-listing"></div>
+    </div>
+  </div>
+
+  <!-- REVIEW RESPONDER -->
+  <div id="tool-review" class="tool-panel" style="display:none">
+    <div class="tool-title">⭐ Review Responder</div>
+    <div class="tool-desc">Paste a customer review (good or bad) and get a professional, brand-positive response that builds trust and boosts your seller rating.</div>
+    <div class="field">
+      <label>Review Text</label>
+      <textarea id="review-input" placeholder="e.g. 'The bottle leaked all over my bag after one day. Very disappointed, expected better quality for this price.'"></textarea>
+    </div>
+    <div class="field">
+      <label>Star Rating</label>
+      <select id="review-stars">
+        <option>1 star — Very negative</option>
+        <option>2 stars — Negative</option>
+        <option>3 stars — Neutral</option>
+        <option>4 stars — Positive</option>
+        <option>5 stars — Glowing</option>
+      </select>
+    </div>
+    <button class="btn" onclick="runTool('review')">⚡ Generate Response</button>
+    <div class="loading" id="loading-review"><div class="spinner"></div> Crafting your response...</div>
+    <div class="output-wrap" id="output-review">
+      <div class="output-header">
+        <div class="output-label">✦ Your Review Response</div>
+        <button class="copy-btn" onclick="copyOutput('review')">Copy</button>
+      </div>
+      <div class="output-box" id="output-text-review"></div>
+    </div>
+  </div>
+
+  <!-- AD COPY -->
+  <div id="tool-adcopy" class="tool-panel" style="display:none">
+    <div class="tool-title">📣 Ad Copy Generator</div>
+    <div class="tool-desc">Generate scroll-stopping ad copy for Facebook, Instagram, or Amazon Sponsored ads. Gets attention, creates desire, drives clicks.</div>
+    <div class="field">
+      <label>Product & Target Audience</label>
+      <textarea id="adcopy-input" placeholder="e.g. Organic dog treats for senior dogs with joint issues. Target: dog owners 35-60 who care about natural ingredients."></textarea>
+    </div>
+    <div class="field">
+      <label>Ad Platform</label>
+      <select id="adcopy-platform">
+        <option>Facebook & Instagram</option>
+        <option>Amazon Sponsored</option>
+        <option>TikTok</option>
+        <option>Google</option>
+      </select>
+    </div>
+    <button class="btn" onclick="runTool('adcopy')">⚡ Generate Ad Copy</button>
+    <div class="loading" id="loading-adcopy"><div class="spinner"></div> Writing your ads...</div>
+    <div class="output-wrap" id="output-adcopy">
+      <div class="output-header">
+        <div class="output-label">✦ Your Ad Copy</div>
+        <button class="copy-btn" onclick="copyOutput('adcopy')">Copy</button>
+      </div>
+      <div class="output-box" id="output-text-adcopy"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT RESEARCH -->
+  <div id="tool-research" class="tool-panel" style="display:none">
+    <div class="tool-title">🔍 Product Research Assistant</div>
+    <div class="tool-desc">Describe a niche or product idea and get a detailed market analysis — demand signals, competition level, pricing strategy, and go/no-go recommendation.</div>
+    <div class="field">
+      <label>Product Idea or Niche</label>
+      <textarea id="research-input" placeholder="e.g. Minimalist leather wallets for men under $40. Thinking about selling on Amazon and Etsy."></textarea>
+    </div>
+    <button class="btn" onclick="runTool('research')">⚡ Analyze Market</button>
+    <div class="loading" id="loading-research"><div class="spinner"></div> Analyzing the market...</div>
+    <div class="output-wrap" id="output-research">
+      <div class="output-header">
+        <div class="output-label">✦ Market Analysis</div>
+        <button class="copy-btn" onclick="copyOutput('research')">Copy</button>
+      </div>
+      <div class="output-box" id="output-text-research"></div>
+    </div>
+  </div>
+
+  <!-- EMAIL SEQUENCE -->
+  <div id="tool-email" class="tool-panel" style="display:none">
+    <div class="tool-title">✉️ Email Sequence Generator</div>
+    <div class="tool-desc">Generate a 3-email post-purchase sequence that builds loyalty, gets reviews, and encourages repeat purchases — automatically.</div>
+    <div class="field">
+      <label>Product & Brand Info</label>
+      <textarea id="email-input" placeholder="e.g. We sell handmade soy candles. Brand is warm and cozy. Product purchased: Lavender & Vanilla candle set, $34."></textarea>
+    </div>
+    <button class="btn" onclick="runTool('email')">⚡ Generate Email Sequence</button>
+    <div class="loading" id="loading-email"><div class="spinner"></div> Writing your email sequence...</div>
+    <div class="output-wrap" id="output-email">
+      <div class="output-header">
+        <div class="output-label">✦ Your 3-Email Sequence</div>
+        <button class="copy-btn" onclick="copyOutput('email')">Copy All</button>
+      </div>
+      <div class="output-box" id="output-text-email"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TOOLS = ['listing','review','adcopy','research','email'];
+
+function switchTool(tool) {
+  TOOLS.forEach(t => {
+    document.getElementById('tool-' + t).style.display = t === tool ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((tab, i) => {
+    tab.classList.toggle('active', TOOLS[i] === tool);
+  });
+}
+
+function getPrompt(tool) {
+  switch(tool) {
+    case 'listing': {
+      const platform = document.getElementById('listing-platform').value;
+      const info = document.getElementById('listing-input').value;
+      return `You are an expert ${platform} listing copywriter. Create a fully optimized product listing for ${platform} based on this product info:\n\n${info}\n\nProvide:\n1. TITLE (keyword-rich, max 200 chars for Amazon, 140 for Etsy)\n2. BULLET POINTS (5 bullet points, lead with benefits, include key features)\n3. DESCRIPTION (2-3 paragraphs, persuasive, SEO-optimized)\n\nFormat it clearly with section headers. Make it compelling and conversion-focused.`;
+    }
+    case 'review': {
+      const reviewText = document.getElementById('review-input').value;
+      const stars = document.getElementById('review-stars').value;
+      return `You are an expert e-commerce brand manager. Write a professional, empathetic response to this ${stars} customer review:\n\n"${reviewText}"\n\nThe response should:\n- Be warm and professional\n- Acknowledge the customer's experience\n- For negative reviews: apologize, explain briefly, offer a solution\n- For positive reviews: thank them and reinforce brand values\n- Be 3-5 sentences, not too long\n- NOT be defensive or make excuses\n\nWrite only the response text, ready to post.`;
+    }
+    case 'adcopy': {
+      const product = document.getElementById('adcopy-input').value;
+      const platform = document.getElementById('adcopy-platform').value;
+      return `You are a top-performing e-commerce ad copywriter. Write 3 different ad copy variations for ${platform} for this product/audience:\n\n${product}\n\nFor each variation provide:\n- HOOK (first line that stops the scroll)\n- BODY (2-3 sentences of desire/proof)\n- CTA (call to action)\n\nLabel each variation (Option A, B, C). Make them emotionally compelling and conversion-focused. Vary the angles (emotion, logic, social proof).`;
+    }
+    case 'research': {
+      const idea = document.getElementById('research-input').value;
+      return `You are an expert e-commerce product researcher. Analyze this product idea and give a detailed market assessment:\n\n${idea}\n\nProvide analysis on:\n1. DEMAND SIGNALS — who wants this, how urgently, how often they buy\n2. COMPETITION LEVEL — estimated competition, key differentiators needed\n3. PRICING STRATEGY — recommended price point and margin potential\n4. PLATFORM FIT — best platform(s) to sell on and why\n5. RISKS & CHALLENGES — key obstacles to watch for\n6. VERDICT — Go / Proceed with Caution / No-Go, with a 1-sentence reason\n\nBe direct and honest. Don't sugarcoat.`;
+    }
+    case 'email': {
+      const info = document.getElementById('email-input').value;
+      return `You are an expert e-commerce email marketer. Write a 3-email post-purchase sequence for this brand/product:\n\n${info}\n\nEmail 1 (Send immediately): Order confirmation + brand welcome. Warm, brief, sets expectations.\nEmail 2 (Send 3 days after delivery): Check-in + subtle review request. Friendly, helpful tone.\nEmail 3 (Send 14 days after delivery): Review reminder + loyalty offer (discount or referral). Creates repeat purchase.\n\nFor each email provide:\n- SUBJECT LINE\n- EMAIL BODY (conversational, on-brand, not spammy)\n\nKeep each email under 150 words. Make them feel human, not corporate.`;
+    }
+  }
+}
+
+async function runTool(tool) {
+  const prompt = getPrompt(tool);
+  if (!prompt) return;
+
+  // Check input isn't empty
+  const inputMap = { listing: 'listing-input', review: 'review-input', adcopy: 'adcopy-input', research: 'research-input', email: 'email-input' };
+  const inputVal = document.getElementById(inputMap[tool])?.value?.trim();
+  if (!inputVal) { alert('Please fill in the input field first!'); return; }
+
+  const btn = document.querySelector(`#tool-${tool} .btn`);
+  const loading = document.getElementById('loading-' + tool);
+  const outputWrap = document.getElementById('output-' + tool);
+  const outputText = document.getElementById('output-text-' + tool);
+
+  btn.disabled = true;
+  loading.classList.add('visible');
+  outputWrap.classList.remove('visible');
+  outputText.textContent = '';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.map(b => b.text || '').join('') || 'Something went wrong. Please try again.';
+    outputText.textContent = text;
+    outputWrap.classList.add('visible');
+  } catch (err) {
+    outputText.textContent = 'Error connecting to AI. Please try again.';
+    outputWrap.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove('visible');
+  }
+}
+
+function copyOutput(tool) {
+  const text = document.getElementById('output-text-' + tool).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector(`#output-${tool} .copy-btn`);
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
